@@ -106,12 +106,33 @@ Users can filter their todo list to show only todos matching specific due date c
 - **FR-001**: System MUST allow users to optionally assign a due date to any todo (new or existing)
 - **FR-002**: System MUST provide a date picker interface for selecting due dates
 - **FR-003**: System MUST provide an edit icon (pencil/edit button) next to each todo that reveals inline editing controls including the date picker
+
+**FR-003: Edit Due Date**
+- When edit icon is clicked, focus automatically moves to date picker input
+- When date is saved or cancelled, focus returns to edit icon
+- Ensures keyboard navigation flow is intuitive
+
+**Visual Behavior:**
+- Date picker appears inline directly below the todo text
+- Show "Save" and "Cancel" buttons next to picker
+- Edit icon changes to indicate edit mode is active
+- Other todos remain non-editable during inline edit
+
 - **FR-004**: System MUST allow users to remove the due date from a todo (due dates are optional)
 - **FR-005**: System MUST persist due dates with todo data so they survive page refreshes
 - **FR-005a**: System MUST automatically upgrade existing todos on first load after deployment by adding dueDate: null to any todo missing the field
+**FR-005b: Date Validation**
+- When loading todos from localStorage, validate dueDate format
+- If dueDate exists but is not valid ISO 8601 (YYYY-MM-DD), set to null
+- Log validation failures to console for debugging
+- Prevents app crashes from corrupted data
 - **FR-006**: System MUST display due dates alongside todos in a clear, readable format
 - **FR-007**: System MUST provide visual indicators for overdue todos using both color styling and a warning icon to ensure accessibility
 - **FR-008**: System MUST provide visual indicators for todos due today using both color styling and a calendar/today icon to ensure accessibility
+**Interaction with Completion Status:**
+- Completed todos show strikethrough text
+- Due date indicators (color + icon) remain visible but at 50% opacity
+- Ensures users can still see when a completed task was/is due
 - **FR-009**: System MUST provide a toolbar above the todo list containing sort controls for due date ordering (ascending and descending)
 - **FR-010**: System MUST handle todos without due dates appropriately in sorted views (appear at the end)
 - **FR-011**: System MUST provide filter options in the toolbar above the todo list for viewing todos by due date criteria (overdue, due today, due this week, no due date)
