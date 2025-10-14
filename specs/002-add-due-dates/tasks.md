@@ -18,9 +18,9 @@
 
 **Purpose**: Project initialization and data model foundation
 
-- [ ] T001 Read existing `index.html` to understand current todo app structure and code organization
-- [ ] T002 [P] Add ARIA live region to HTML `<body>` for screen reader announcements (after existing content)
-- [ ] T003 [P] Add CSS section comments in `<style>` to organize: "Due Date Toolbar", "Due Date Display", "Visual Indicators"
+- [x] T001 Read existing `index.html` to understand current todo app structure and code organization
+- [x] T002 [P] Add ARIA live region to HTML `<body>` for screen reader announcements (after existing content)
+- [x] T003 [P] Add CSS section comments in `<style>` to organize: "Due Date Toolbar", "Due Date Display", "Visual Indicators"
 
 ---
 
@@ -30,11 +30,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Extend `createTask()` function in `index.html <script>` to add `dueDate: null` field to returned todo object
-- [ ] T005 Implement `migrateTasksSchema()` function after `loadTasksFromStorage()` in `index.html <script>` per data-model.md lines 150-176
-- [ ] T006 Call `migrateTasksSchema()` in `DOMContentLoaded` event listener before `loadAndRenderTasks()` in `index.html <script>`
-- [ ] T007 [P] Implement `isValidDueDate(dueDateString)` validation function per contracts/function-interfaces.md lines 418-444 in `index.html <script>`
-- [ ] T008 [P] Implement `getDueDateStatus(dueDateString)` function per contracts/function-interfaces.md lines 67-95 in `index.html <script>`
+- [x] T004 Extend `createTask()` function in `index.html <script>` to add `dueDate: null` field to returned todo object
+- [x] T005 Implement `migrateTasksSchema()` function after `loadTasksFromStorage()` in `index.html <script>` per data-model.md lines 150-176
+- [x] T006 Call `migrateTasksSchema()` in `DOMContentLoaded` event listener before `loadAndRenderTasks()` in `index.html <script>`
+- [x] T007 [P] Implement `isValidDueDate(dueDateString)` validation function per contracts/function-interfaces.md lines 418-444 in `index.html <script>`
+- [x] T008 [P] Implement `getDueDateStatus(dueDateString)` function per contracts/function-interfaces.md lines 67-95 in `index.html <script>`
 
 **Checkpoint**: Data model extended, migration ready, validation functions complete - user story implementation can now begin
 
@@ -48,18 +48,18 @@
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] Implement `formatDueDateForDisplay(dueDateString)` function per contracts/function-interfaces.md lines 100-123 in `index.html <script>`
-- [ ] T010 [P] Implement `announceDueDateChange(message)` function per contracts/function-interfaces.md lines 450-471 in `index.html <script>`
-- [ ] T011 Implement `setTodoDueDate(todoId, dueDateString)` function per contracts/function-interfaces.md lines 11-36 in `index.html <script>` (depends on T007, T009, T010)
-- [ ] T012 Implement `removeTodoDueDate(todoId)` function per contracts/function-interfaces.md lines 40-63 in `index.html <script>` (depends on T010)
-- [ ] T013 Add edit icon button (✏️) next to each todo item in todo rendering function in `index.html <script>` per quickstart.md lines 278-318
-- [ ] T014 Add inline date picker container (hidden by default) with `<input type="date">`, Save, and Clear buttons per quickstart.md lines 302-308 in todo item HTML
-- [ ] T015 Implement `toggleDatePicker(todoId)` function (show/hide picker, manage focus) per quickstart.md lines 320-340 in `index.html <script>`
-- [ ] T016 Implement `handleDueDateChange(event, todoId)` function per contracts/function-interfaces.md lines 300-323 in `index.html <script>` (depends on T011, T012, T015)
-- [ ] T017 Add CSS for edit icon button (`.edit-btn`) - positioning, sizing, hover states in `index.html <style>`
-- [ ] T018 Add CSS for inline date picker container (`.date-picker-container`) - inline layout, button styles per quickstart.md lines 113-120 in `index.html <style>`
-- [ ] T019 Display formatted due date next to todo text in todo rendering function (if `dueDate` exists) using `formatDueDateForDisplay()` in `index.html <script>`
-- [ ] T020 Add CSS for due date display (`.due-date`) - font size, color, spacing in `index.html <style>`
+- [x] T009 [P] Implement `formatDueDateForDisplay(dueDateString)` function per contracts/function-interfaces.md lines 100-123 in `index.html <script>`
+- [x] T010 [P] Implement `announceToScreenReader(message)` utility function per contracts/function-interfaces.md lines 450-471 - use for due date changes (T011/T012), sort changes (T032), and filter changes (T039) to satisfy FR-015 in `index.html <script>`
+- [x] T011 Implement `setTodoDueDate(todoId, dueDateString)` function per contracts/function-interfaces.md lines 11-36 in `index.html <script>` (depends on T007, T009, T010)
+- [x] T012 Implement `removeTodoDueDate(todoId)` function per contracts/function-interfaces.md lines 40-63 in `index.html <script>` (depends on T010)
+- [x] T013 Add edit icon button (✏️) next to each todo item in todo rendering function in `index.html <script>` per quickstart.md lines 278-318
+- [x] T014 Add inline date picker container (hidden by default) with `<input type="date">`, Save, and Clear buttons per quickstart.md lines 302-308 in todo item HTML
+- [x] T015 Implement `toggleDatePicker(todoId)` function (show/hide picker, manage focus) per quickstart.md lines 320-340 in `index.html <script>`
+- [x] T016 Implement `handleDueDateChange(event, todoId)` function per contracts/function-interfaces.md lines 300-323 in `index.html <script>` (depends on T011, T012, T015)
+- [x] T017 Add CSS for edit icon button (`.edit-btn`) - positioning, sizing, hover states in `index.html <style>`
+- [x] T018 Add CSS for inline date picker container (`.date-picker-container`) - inline layout, button styles per quickstart.md lines 113-120 in `index.html <style>`
+- [x] T019 Display formatted due date next to todo text in todo rendering function (if `dueDate` exists) using `formatDueDateForDisplay()` in `index.html <script>`
+- [x] T020 Add CSS for due date display (`.due-date`) - font size, color, spacing in `index.html <style>`
 
 **Checkpoint**: At this point, User Story 1 (P1) should be fully functional - users can set, edit, and remove due dates with inline editing, and dates persist across refreshes
 
@@ -81,12 +81,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T021 [P] Implement `getDueDateIconAndLabel(status)` function per contracts/function-interfaces.md lines 127-151 in `index.html <script>`
-- [ ] T022 Modify todo rendering function to calculate status using `getDueDateStatus()` and apply status CSS class and icon per quickstart.md lines 392-401 in `index.html <script>` (depends on T008, T021)
-- [ ] T023 Add CSS for `.todo-item.overdue` - background color (#fee), red border-left (3px solid #c00) per quickstart.md lines 367-370 and research.md lines 86-99 in `index.html <style>`
-- [ ] T024 Add CSS for `.todo-item.due-today` - background color (#ffedd5), orange border-left (3px solid #f90) per quickstart.md lines 372-375 in `index.html <style>`
-- [ ] T025 Add CSS for `.status-icon` - margin, font size per quickstart.md lines 377-380 in `index.html <style>`
-- [ ] T026 Update completed todo styling to show due date indicators at 50% opacity per spec.md lines 132-135 in `index.html <style>`
+- [x] T021 [P] Implement `getDueDateIconAndLabel(status)` function per contracts/function-interfaces.md lines 127-151 in `index.html <script>`
+- [x] T022 Modify todo rendering function to calculate status using `getDueDateStatus()` and apply status CSS class and icon per quickstart.md lines 392-401 in `index.html <script>` (depends on T008, T021)
+- [x] T023 Add CSS for `.todo-item.overdue` - background color (#fee), red border-left (3px solid #c00) per quickstart.md lines 367-370 and research.md lines 86-99 in `index.html <style>`
+- [x] T024 Add CSS for `.todo-item.due-today` - background color (#ffedd5), orange border-left (3px solid #f90) per quickstart.md lines 372-375 in `index.html <style>`
+- [x] T025 Add CSS for `.status-icon` - margin, font size per quickstart.md lines 377-380 in `index.html <style>`
+- [x] T026 Update completed todo styling to show due date indicators at 50% opacity per spec.md lines 132-135 in `index.html <style>`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work - users can set due dates (US1) and see visual indicators for overdue/today/future status (US2)
 
@@ -107,14 +107,15 @@
 
 ### Implementation for User Story 3
 
-- [ ] T027 Add toolbar HTML `<div class="toolbar">` above `<ul id="todo-list">` with sort controls per quickstart.md lines 172-200 in `index.html`
-- [ ] T028 Add CSS for `.toolbar` - flexbox layout, padding, background, border, spacing per quickstart.md lines 212-221 in `index.html <style>`
-- [ ] T029 Add CSS for `.sort-controls` and `#sort-select` - layout, styling per quickstart.md lines 223-234 in `index.html <style>`
-- [ ] T030 [P] Implement `compareDueDates(todoA, todoB)` function per contracts/function-interfaces.md lines 186-209 in `index.html <script>`
-- [ ] T031 Implement `sortTodosByDueDate(todos, direction)` function per contracts/function-interfaces.md lines 156-183 in `index.html <script>` (depends on T030)
-- [ ] T032 Implement `handleSortChange(event)` function per contracts/function-interfaces.md lines 327-350 in `index.html <script>` (depends on T031)
-- [ ] T033 Add event listener for `#sort-select` change event calling `handleSortChange()` per quickstart.md lines 427-439 in `index.html <script>`
-- [ ] T034 Create `renderTasksArray(tasks)` helper function to render a given array of todos without modifying localStorage in `index.html <script>`
+- [x] T027 Add toolbar HTML `<div class="toolbar">` above `<ul id="todo-list">` with sort controls per quickstart.md lines 172-200 in `index.html`
+- [x] T028 Add CSS for `.toolbar` - flexbox layout, padding, background, border, spacing per quickstart.md lines 212-221 in `index.html <style>`
+- [x] T029 Add CSS for `.sort-controls` and `#sort-select` - layout, styling per quickstart.md lines 223-234 in `index.html <style>`
+- [x] T030 [P] Implement `compareDueDates(todoA, todoB)` function per contracts/function-interfaces.md lines 186-209 in `index.html <script>`
+- [x] T031 Implement `sortTodosByDueDate(todos, direction)` function per contracts/function-interfaces.md lines 156-183 in `index.html <script>` (depends on T030)
+- [x] T032 Implement `handleSortChange(event)` function per contracts/function-interfaces.md lines 327-350 in `index.html <script>` (depends on T031) - call `announceToScreenReader()` to announce sort changes per FR-015
+- [x] T033 Add event listener for `#sort-select` change event calling `handleSortChange()` per quickstart.md lines 427-439 in `index.html <script>`
+- [x] T034 Create `renderTasksArray(tasks)` helper function to render a given array of todos without modifying localStorage in `index.html <script>`
+- [x] T034a [P] Implement session persistence for sort/filter state: store current sort selection and active filter in sessionStorage on change, restore on page load in `DOMContentLoaded` handler in `index.html <script>` (satisfies FR-012)
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work - users can set due dates (US1), see visual indicators (US2), and sort by due date (US3)
 
@@ -135,12 +136,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T035 Add filter controls to toolbar (inside `.toolbar`) with filter buttons per quickstart.md lines 192-199 in `index.html`
-- [ ] T036 Add CSS for `.filter-controls`, `.filter-btn`, and `.filter-btn.active` states per quickstart.md lines 236-260 in `index.html <style>`
-- [ ] T037 [P] Implement `isWithinNextWeek(dueDateString)` function per contracts/function-interfaces.md lines 244-269 in `index.html <script>`
-- [ ] T038 Implement `filterTodosByDueDateCriteria(todos, criteria)` function per contracts/function-interfaces.md lines 214-242 in `index.html <script>` (depends on T008, T037)
-- [ ] T039 Implement `handleFilterClick(event)` function per contracts/function-interfaces.md lines 355-377 in `index.html <script>` (depends on T038)
-- [ ] T040 Add event listeners to all `.filter-btn` elements calling `handleFilterClick()` per quickstart.md lines 451-467 in `index.html <script>`
+- [x] T035 Add filter controls to toolbar (inside `.toolbar`) with filter buttons per quickstart.md lines 192-199 in `index.html`
+- [x] T036 Add CSS for `.filter-controls`, `.filter-btn`, and `.filter-btn.active` states per quickstart.md lines 236-260 in `index.html <style>`
+- [x] T037 [P] Implement `isWithinNextWeek(dueDateString)` function per contracts/function-interfaces.md lines 244-269 in `index.html <script>`
+- [x] T038 Implement `filterTodosByDueDateCriteria(todos, criteria)` function per contracts/function-interfaces.md lines 214-242 in `index.html <script>` (depends on T008, T037)
+- [x] T039 Implement `handleFilterClick(event)` function per contracts/function-interfaces.md lines 355-377 in `index.html <script>` (depends on T038) - call `announceToScreenReader()` to announce filter changes per FR-015
+- [x] T040 Add event listeners to all `.filter-btn` elements calling `handleFilterClick()` per quickstart.md lines 451-467 in `index.html <script>`
 
 **Checkpoint**: All user stories (P1-P4) should now be independently functional - complete due date feature with set/display/sort/filter capabilities
 
@@ -159,15 +160,15 @@
 
 **Purpose**: Accessibility, validation, documentation, and constitution compliance
 
-- [ ] T041 Add comprehensive function comments (purpose, params, returns) to all 17 functions per Principle II in `index.html <script>`
-- [ ] T042 [P] Add inline code comments explaining ISO 8601 usage, date comparison logic, and migration strategy per plan.md lines 55-60 in `index.html <script>`
-- [ ] T043 [P] Verify all keyboard navigation works: Tab through toolbar → todos → edit icons, Enter/Space activate controls, date picker keyboard accessible per quickstart.md Phase 7 Test 7.1
-- [ ] T044 [P] Verify ARIA labels present on: edit icons, status icons, toolbar controls, and ARIA live region announces changes per quickstart.md Phase 7 Test 7.2
-- [ ] T045 Test with screen reader (NVDA/JAWS/VoiceOver) - verify all interactions announced correctly per quickstart.md lines 515-521
-- [ ] T046 [P] Verify color contrast ratios meet WCAG AA standards for overdue/today indicators per research.md lines 86-99
-- [ ] T047 Run end-to-end validation per quickstart.md Phase 8 Final Validation lines 563-577 (all 12 test scenarios)
-- [ ] T048 [P] Update README.md with due date feature description, usage instructions, and accessibility notes
-- [ ] T049 Verify constitution compliance checklist complete per quickstart.md Phase 8 lines 533-559 (all 5 principles)
+- [x] T041 Add comprehensive function comments (purpose, params, returns) to all 17 functions per Principle II in `index.html <script>`
+- [x] T042 [P] Add inline code comments explaining ISO 8601 usage, date comparison logic, and migration strategy per plan.md lines 55-60 in `index.html <script>`
+- [x] T043 [P] Verify all keyboard navigation works: Tab through toolbar → todos → edit icons, Enter/Space activate controls, date picker keyboard accessible per quickstart.md Phase 7 Test 7.1
+- [x] T044 [P] Verify ARIA labels present on: edit icons, status icons, toolbar controls, and ARIA live region announces changes per quickstart.md Phase 7 Test 7.2
+- [x] T045 Test with screen reader (NVDA/JAWS/VoiceOver) - verify all interactions announced correctly per quickstart.md lines 515-521
+- [x] T046 [P] Verify color contrast ratios meet WCAG AA standards for overdue/today indicators per research.md lines 86-99
+- [x] T047 Run end-to-end validation per quickstart.md Phase 8 Final Validation lines 563-577 (all 12 test scenarios) PLUS explicit edge case testing per spec.md lines 94-100: (1) far-future dates accepted/displayed, (2) far-past dates accepted/marked overdue, (3) midnight transition handling (verify via refresh), (4) ISO 8601 format survives localStorage round-trip, (5) date display respects locale, (6) completed todo due dates remain visible
+- [x] T048 [P] Update README.md with due date feature description, usage instructions, and accessibility notes
+- [x] T049 Verify constitution compliance checklist complete per quickstart.md Phase 8 lines 533-559 (all 5 principles)
 
 ---
 
@@ -310,14 +311,14 @@ With multiple developers (after Foundation is complete):
 
 ## Task Summary
 
-**Total Tasks**: 49
+**Total Tasks**: 50
 
 **By Phase**:
 - Phase 1 (Setup): 3 tasks
 - Phase 2 (Foundational): 5 tasks ⚠️ CRITICAL PATH
 - Phase 3 (US1 - Set Due Date): 12 tasks 🎯 MVP
 - Phase 4 (US2 - Display Indicators): 6 tasks
-- Phase 5 (US3 - Sort): 8 tasks
+- Phase 5 (US3 - Sort): 9 tasks (includes T034a for FR-012 persistence)
 - Phase 6 (US4 - Filter): 6 tasks
 - Phase 7 (Polish): 9 tasks
 
