@@ -213,6 +213,181 @@
       color: #95a5a6;
       font-style: italic;
     }
+
+    /* === Due Date Toolbar === */
+    /* Toolbar container for sort and filter controls */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    /* Sort controls */
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sort-controls label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .sort-select {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .sort-select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    /* Filter controls in toolbar */
+    .filter-controls {
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn-due {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+      background-color: #ecf0f1;
+      color: #555;
+      border: 2px solid transparent;
+    }
+
+    .filter-btn-due:hover {
+      background-color: #d5dbdb;
+    }
+
+    .filter-btn-due.active {
+      background-color: #3498db;
+      color: white;
+      border-color: #2980b9;
+    }
+
+    /* === Due Date Display === */
+    /* Styles for displaying due dates next to todo items */
+    .due-date {
+      font-size: 0.85rem;
+      color: #666;
+      font-style: italic;
+      margin-left: 0.5rem;
+    }
+
+    /* Edit button for inline due date editing */
+    .edit-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 1rem;
+      background-color: #ecf0f1;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .edit-btn:hover {
+      background-color: #d5dbdb;
+    }
+
+    /* Inline date picker container */
+    .date-picker-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    .date-input {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      transition: border-color 0.2s;
+    }
+
+    .date-input:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .btn-save,
+    .btn-clear {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-save {
+      background-color: #27ae60;
+      color: white;
+    }
+
+    .btn-save:hover {
+      background-color: #229954;
+    }
+
+    .btn-clear {
+      background-color: #95a5a6;
+      color: white;
+    }
+
+    .btn-clear:hover {
+      background-color: #7f8c8d;
+    }
+
+    /* === Visual Indicators === */
+    /* Styles for overdue and due-today visual indicators (color + icons) */
+
+    /* Overdue tasks - red background with red border */
+    .task-item.overdue {
+      background-color: #fee;
+      border-left: 3px solid #c00;
+    }
+
+    /* Tasks due today - orange background with orange border */
+    .task-item.due-today {
+      background-color: #ffedd5;
+      border-left: 3px solid #f90;
+    }
+
+    /* Status icon styling */
+    .status-icon {
+      margin-left: 0.25rem;
+      font-size: 1rem;
+    }
+
+    /* Completed todos with due dates - show indicators at 50% opacity */
+    .task-item.completed.overdue,
+    .task-item.completed.due-today {
+      opacity: 0.6;
+    }
+
+    .task-item.completed .status-icon {
+      opacity: 0.5;
+    }
   </style>
 </head>
 <body>
@@ -241,6 +416,25 @@
         <button class="btn filter-btn" data-filter="completed">Completed</button>
       </div>
 
+      <!-- Due Date Toolbar (Sort and Filter) -->
+      <div class="toolbar">
+        <div class="sort-controls">
+          <label for="sort-select">Sort by:</label>
+          <select id="sort-select" class="sort-select">
+            <option value="none">Default</option>
+            <option value="due-asc">Due Date (Earliest First)</option>
+            <option value="due-desc">Due Date (Latest First)</option>
+          </select>
+        </div>
+        <div class="filter-controls">
+          <button class="btn filter-btn-due active" data-filter-due="all">All</button>
+          <button class="btn filter-btn-due" data-filter-due="overdue">Overdue</button>
+          <button class="btn filter-btn-due" data-filter-due="today">Due Today</button>
+          <button class="btn filter-btn-due" data-filter-due="week">This Week</button>
+          <button class="btn filter-btn-due" data-filter-due="none">No Due Date</button>
+        </div>
+      </div>
+
       <!-- Task List -->
       <ul class="task-list" id="taskList"></ul>
 
@@ -257,6 +451,12 @@
     // Current filter selection: 'all', 'active', or 'completed'
     let currentFilter = 'all';
 
+    // Current sort selection: 'none', 'due-asc', or 'due-desc'
+    let currentSort = 'none';
+
+    // Current due date filter: 'all', 'overdue', 'today', 'week', 'none'
+    let currentDueDateFilter = 'all';
+
     // === Utility Functions ===
 
     /**
@@ -267,6 +467,78 @@
      */
     function generateTaskId() {
       return Date.now();
+    }
+
+    /**
+     * Validate a due date string
+     * Checks if the date string is valid ISO 8601 format (YYYY-MM-DD) or null
+     *
+     * @param {string|null} dueDateString - Date string to validate
+     * @returns {boolean} True if valid (or null), false otherwise
+     */
+    function isValidDueDate(dueDateString) {
+      // Null is valid (no due date assigned)
+      if (dueDateString === null) {
+        return true;
+      }
+
+      // Must be a string
+      if (typeof dueDateString !== 'string') {
+        return false;
+      }
+
+      // Check format matches ISO 8601: YYYY-MM-DD
+      const isoRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!isoRegex.test(dueDateString)) {
+        return false;
+      }
+
+      // Parse the date and check if it's valid (not Invalid Date)
+      const date = new Date(dueDateString);
+      if (isNaN(date.getTime())) {
+        return false;
+      }
+
+      // Check year is within practical range (2020-2099)
+      const year = date.getFullYear();
+      if (year < 2020 || year > 2099) {
+        return false;
+      }
+
+      return true;
+    }
+
+    /**
+     * Get the status of a due date relative to today
+     * Compares the due date to today's date to determine if overdue, due today, or future
+     *
+     * @param {string|null} dueDateString - ISO 8601 date string (YYYY-MM-DD) or null
+     * @returns {string} Status: 'none', 'overdue', 'today', or 'future'
+     */
+    function getDueDateStatus(dueDateString) {
+      // If no due date, return 'none'
+      if (!dueDateString) {
+        return 'none';
+      }
+
+      // Get today's date normalized to midnight (removes time component)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Parse the due date string (ISO 8601 format: YYYY-MM-DD)
+      // Add T00:00:00 to ensure it's parsed as local time at midnight
+      const dueDate = new Date(dueDateString + 'T00:00:00');
+
+      // Compare dates to determine status
+      if (dueDate < today) {
+        return 'overdue';  // Due date is in the past
+      }
+
+      if (dueDate.toDateString() === today.toDateString()) {
+        return 'today';  // Due date is today
+      }
+
+      return 'future';  // Due date is in the future
     }
 
     /**
@@ -302,6 +574,89 @@
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    /**
+     * Format a due date for user-friendly display
+     * Converts ISO 8601 date string to localized readable format
+     *
+     * @param {string|null} dueDateString - ISO 8601 date string (YYYY-MM-DD) or null
+     * @returns {string} Formatted date (e.g., "Oct 14, 2025") or empty string if null
+     */
+    function formatDueDateForDisplay(dueDateString) {
+      // If no due date, return empty string
+      if (!dueDateString) {
+        return '';
+      }
+
+      // Parse the ISO 8601 date string
+      const date = new Date(dueDateString + 'T00:00:00');
+
+      // Format using toLocaleDateString with options for readable output
+      // Example output: "Oct 14, 2025"
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    /**
+     * Announce a message to screen readers via ARIA live region
+     * Used for due date changes, sort changes, and filter changes per FR-015
+     *
+     * @param {string} message - Message to announce (e.g., "Due date set to October 14, 2025")
+     * @returns {void}
+     */
+    function announceToScreenReader(message) {
+      // Get the ARIA live region element
+      const announcements = document.getElementById('announcements');
+
+      if (!announcements) {
+        console.warn('ARIA live region not found');
+        return;
+      }
+
+      // Set the message text (screen readers will announce it)
+      announcements.textContent = message;
+
+      // Clear the message after 1 second so it can be reused for next announcement
+      setTimeout(() => {
+        announcements.textContent = '';
+      }, 1000);
+    }
+
+    /**
+     * Get icon and ARIA label for a due date status
+     * Provides dual-coded indicators (color + icon) for accessibility
+     *
+     * @param {string} status - Status from getDueDateStatus() ('none', 'overdue', 'today', 'future')
+     * @returns {object} {icon: string, label: string, cssClass: string}
+     */
+    function getDueDateIconAndLabel(status) {
+      // Map status to appropriate icon, ARIA label, and CSS class
+      if (status === 'overdue') {
+        return {
+          icon: '⚠️',
+          label: 'Warning: Task is overdue',
+          cssClass: 'overdue'
+        };
+      }
+
+      if (status === 'today') {
+        return {
+          icon: '📅',
+          label: 'Due today',
+          cssClass: 'due-today'
+        };
+      }
+
+      // Future or none - no special indicator
+      return {
+        icon: '',
+        label: '',
+        cssClass: ''
+      };
     }
 
     // === Storage Functions ===
@@ -396,6 +751,38 @@
     }
 
     /**
+     * Migrate todos from schema v1 (feature 001) to schema v2 (feature 002)
+     * Adds dueDate: null to any todo missing the field
+     * This is a non-destructive, one-time operation that ensures backward compatibility
+     *
+     * @returns {void}
+     */
+    function migrateTasksSchema() {
+      // Load current tasks from localStorage
+      const loadedTasks = loadTasks();
+
+      // Track if any tasks were updated
+      let updated = false;
+
+      // Check each task for the dueDate field
+      loadedTasks.forEach(task => {
+        // If task is missing the dueDate field, add it with null value
+        if (!task.hasOwnProperty('dueDate')) {
+          task.dueDate = null;
+          updated = true;
+        }
+      });
+
+      // Save back to localStorage only if changes were made
+      if (updated) {
+        // Update global tasks array
+        tasks = loadedTasks;
+        saveTasks();
+        console.log(`Migration complete: Added dueDate field to ${loadedTasks.length} todos`);
+      }
+    }
+
+    /**
      * Check if localStorage is available and working
      * Tests localStorage by attempting to set and remove a test value
      *
@@ -465,11 +852,19 @@
 
       // Create and append list items for each filtered task
       filteredTasks.forEach(task => {
+        // Calculate due date status for visual indicators
+        const dueDateStatus = getDueDateStatus(task.dueDate);
+        const statusInfo = getDueDateIconAndLabel(dueDateStatus);
+
         // Create list item
         const li = document.createElement('li');
         li.className = 'task-item';
         if (task.completed) {
           li.classList.add('completed');
+        }
+        // Add status CSS class for overdue/today visual indicators
+        if (statusInfo.cssClass) {
+          li.classList.add(statusInfo.cssClass);
         }
 
         // Create checkbox
@@ -487,6 +882,63 @@
         textSpan.className = 'task-text';
         textSpan.textContent = task.text; // Browser automatically escapes text content
 
+        // Display due date if present
+        if (task.dueDate) {
+          const dueDateSpan = document.createElement('span');
+          dueDateSpan.className = 'due-date';
+          dueDateSpan.textContent = ` (Due: ${formatDueDateForDisplay(task.dueDate)})`;
+          textSpan.appendChild(dueDateSpan);
+        }
+
+        // Add status icon for overdue/today tasks (dual-coded with color)
+        if (statusInfo.icon) {
+          const statusIcon = document.createElement('span');
+          statusIcon.className = 'status-icon';
+          statusIcon.textContent = ` ${statusInfo.icon}`;
+          statusIcon.setAttribute('aria-label', statusInfo.label);
+          statusIcon.setAttribute('role', 'img');
+          textSpan.appendChild(statusIcon);
+        }
+
+        // Create edit icon button
+        const editBtn = document.createElement('button');
+        editBtn.id = `edit-btn-${task.id}`;
+        editBtn.className = 'edit-btn';
+        editBtn.innerHTML = '✏️';  // Pencil emoji for edit icon
+        editBtn.setAttribute('aria-label', 'Edit due date');
+        editBtn.addEventListener('click', () => toggleDatePicker(task.id));
+
+        // Create inline date picker container (hidden by default)
+        const datePickerContainer = document.createElement('div');
+        datePickerContainer.id = `date-picker-${task.id}`;
+        datePickerContainer.className = 'date-picker-container';
+        datePickerContainer.style.display = 'none';
+
+        // Create date input
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.id = `date-input-${task.id}`;
+        dateInput.className = 'date-input';
+        dateInput.value = task.dueDate || '';
+        dateInput.setAttribute('aria-label', 'Select due date');
+
+        // Create Save button
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn-save';
+        saveBtn.textContent = 'Save';
+        saveBtn.addEventListener('click', (e) => handleDueDateChange(e, task.id, 'save'));
+
+        // Create Clear button
+        const clearBtn = document.createElement('button');
+        clearBtn.className = 'btn-clear';
+        clearBtn.textContent = 'Clear';
+        clearBtn.addEventListener('click', (e) => handleDueDateChange(e, task.id, 'clear'));
+
+        // Append inputs to date picker container
+        datePickerContainer.appendChild(dateInput);
+        datePickerContainer.appendChild(saveBtn);
+        datePickerContainer.appendChild(clearBtn);
+
         // Create delete button
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'task-delete';
@@ -499,11 +951,159 @@
         // Append all elements to list item
         li.appendChild(checkbox);
         li.appendChild(textSpan);
+        li.appendChild(editBtn);
+        li.appendChild(datePickerContainer);
         li.appendChild(deleteBtn);
 
         // Append list item to task list
         taskList.appendChild(li);
       });
+    }
+
+    // === Due Date Management Functions ===
+
+    /**
+     * Set or update the due date for a todo
+     * Validates date format, updates todo, saves, and announces change
+     *
+     * @param {number} todoId - The ID of the todo to update
+     * @param {string} dueDateString - ISO 8601 date string (YYYY-MM-DD)
+     * @returns {boolean} True if successful, false if todo not found or invalid date
+     */
+    function setTodoDueDate(todoId, dueDateString) {
+      // Validate date format
+      if (!isValidDueDate(dueDateString)) {
+        console.warn('Invalid due date format:', dueDateString);
+        return false;
+      }
+
+      // Find todo by ID
+      const todo = tasks.find(t => t.id === todoId);
+      if (!todo) {
+        console.warn('Todo not found:', todoId);
+        return false;
+      }
+
+      // Update the due date
+      todo.dueDate = dueDateString;
+
+      // Save to localStorage
+      saveTasks();
+
+      // Re-render the task list
+      renderTasks();
+
+      // Announce change to screen readers
+      const formattedDate = formatDueDateForDisplay(dueDateString);
+      announceToScreenReader(`Due date set to ${formattedDate}`);
+
+      return true;
+    }
+
+    /**
+     * Remove the due date from a todo (sets to null)
+     * Updates todo, saves, and announces change
+     *
+     * @param {number} todoId - The ID of the todo to update
+     * @returns {boolean} True if successful, false if todo not found
+     */
+    function removeTodoDueDate(todoId) {
+      // Find todo by ID
+      const todo = tasks.find(t => t.id === todoId);
+      if (!todo) {
+        console.warn('Todo not found:', todoId);
+        return false;
+      }
+
+      // Remove the due date (set to null)
+      todo.dueDate = null;
+
+      // Save to localStorage
+      saveTasks();
+
+      // Re-render the task list
+      renderTasks();
+
+      // Announce change to screen readers
+      announceToScreenReader('Due date removed');
+
+      return true;
+    }
+
+    /**
+     * Toggle visibility of the inline date picker for a todo
+     * Shows/hides the date picker and manages focus for accessibility
+     *
+     * @param {number} todoId - The ID of the todo being edited
+     * @returns {void}
+     */
+    function toggleDatePicker(todoId) {
+      // Get the date picker container for this todo
+      const pickerContainer = document.getElementById(`date-picker-${todoId}`);
+      if (!pickerContainer) {
+        console.warn('Date picker container not found for todo:', todoId);
+        return;
+      }
+
+      // Check if picker is currently hidden
+      const isHidden = pickerContainer.style.display === 'none' || pickerContainer.style.display === '';
+
+      if (isHidden) {
+        // Show the picker
+        pickerContainer.style.display = 'block';
+
+        // Focus the date input for keyboard accessibility
+        const dateInput = pickerContainer.querySelector('.date-input');
+        if (dateInput) {
+          dateInput.focus();
+        }
+      } else {
+        // Hide the picker
+        pickerContainer.style.display = 'none';
+
+        // Return focus to the edit button
+        const editBtn = document.getElementById(`edit-btn-${todoId}`);
+        if (editBtn) {
+          editBtn.focus();
+        }
+      }
+    }
+
+    /**
+     * Handle date picker value changes
+     * Processes save/clear actions and updates todo due date
+     *
+     * @param {Event} event - The event from save/clear button click
+     * @param {number} todoId - ID of the todo being edited
+     * @param {string} action - 'save' or 'clear'
+     * @returns {void}
+     */
+    function handleDueDateChange(event, todoId, action) {
+      event.preventDefault();
+
+      if (action === 'clear') {
+        // Clear the due date
+        removeTodoDueDate(todoId);
+      } else if (action === 'save') {
+        // Get the date input value
+        const dateInput = document.getElementById(`date-input-${todoId}`);
+        if (!dateInput) {
+          return;
+        }
+
+        const newDate = dateInput.value;
+
+        if (newDate) {
+          // Set the new due date
+          setTodoDueDate(todoId, newDate);
+        } else {
+          // If date input is empty, remove due date
+          removeTodoDueDate(todoId);
+        }
+      }
+
+      // Hide the date picker
+      toggleDatePicker(todoId);
     }
 
     // === Task Management Functions ===
@@ -526,7 +1126,8 @@
       const newTask = {
         id: generateTaskId(),
         text: taskText.trim(),
-        completed: false
+        completed: false,
+        dueDate: null  // ISO 8601 date string (YYYY-MM-DD) or null if no due date
       };
 
       // Add task to array
@@ -600,6 +1201,118 @@
       announcements.textContent = `Task deleted: ${deletedTaskText}`;
     }
 
+    // === Sort and Filter Functions ===
+
+    /**
+     * Compare function for sorting todos by due date (ascending)
+     * Todos without due dates appear at the end
+     *
+     * @param {object} todoA - First todo object
+     * @param {object} todoB - Second todo object
+     * @returns {number} Negative if A < B, positive if A > B, 0 if equal
+     */
+    function compareDueDates(todoA, todoB) {
+      // If both have no due date, maintain original order
+      if (!todoA.dueDate && !todoB.dueDate) {
+        return 0;
+      }
+
+      // Todos without due dates go to the end
+      if (!todoA.dueDate) {
+        return 1;
+      }
+      if (!todoB.dueDate) {
+        return -1;
+      }
+
+      // Compare ISO 8601 strings lexicographically (works because of format)
+      return todoA.dueDate.localeCompare(todoB.dueDate);
+    }
+
+    /**
+     * Sort todos by due date
+     * Returns a new sorted array without mutating the original
+     *
+     * @param {Array} todos - Array of todo objects
+     * @param {string} direction - Sort direction: 'asc' (ascending) or 'desc' (descending)
+     * @returns {Array} Sorted array
+     */
+    function sortTodosByDueDate(todos, direction = 'asc') {
+      // Create a copy to avoid mutating original array
+      const sorted = [...todos];
+
+      // Sort using compareDueDates function
+      sorted.sort(compareDueDates);
+
+      // Reverse if descending order
+      if (direction === 'desc') {
+        sorted.reverse();
+      }
+
+      return sorted;
+    }
+
+    /**
+     * Check if a due date is within the next 7 days (including today)
+     *
+     * @param {string|null} dueDateString - ISO 8601 date string (YYYY-MM-DD) or null
+     * @returns {boolean} True if within next 7 days, false otherwise
+     */
+    function isWithinNextWeek(dueDateString) {
+      // If no due date, return false
+      if (!dueDateString) {
+        return false;
+      }
+
+      // Get today normalized to midnight
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Calculate date 7 days from today
+      const nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
+
+      // Parse the due date string
+      const dueDate = new Date(dueDateString + 'T00:00:00');
+
+      // Check if due date is within the range
+      return dueDate >= today && dueDate <= nextWeek;
+    }
+
+    /**
+     * Filter todos by due date criteria
+     *
+     * @param {Array} todos - Array of todo objects
+     * @param {string} criteria - Filter criteria: 'all', 'overdue', 'today', 'week', 'none'
+     * @returns {Array} Filtered array
+     */
+    function filterTodosByDueDateCriteria(todos, criteria) {
+      // If 'all', return copy of all todos
+      if (criteria === 'all') {
+        return [...todos];
+      }
+
+      // Filter by criteria
+      if (criteria === 'overdue') {
+        return todos.filter(todo => getDueDateStatus(todo.dueDate) === 'overdue');
+      }
+
+      if (criteria === 'today') {
+        return todos.filter(todo => getDueDateStatus(todo.dueDate) === 'today');
+      }
+
+      if (criteria === 'week') {
+        return todos.filter(todo => isWithinNextWeek(todo.dueDate));
+      }
+
+      if (criteria === 'none') {
+        return todos.filter(todo => todo.dueDate === null);
+      }
+
+      // Fallback: return all todos
+      return [...todos];
+    }
+
     // === Filter Functions ===
 
     /**
@@ -630,29 +1343,32 @@
     }
 
     /**
-     * Get filtered tasks based on current filter
-     * Returns subset of tasks array matching the current filter
+     * Get filtered and sorted tasks based on current filters and sort
+     * Applies completion filter, due date filter, and sorting
      *
-     * @returns {Array} Filtered array of task objects
+     * @returns {Array} Filtered and sorted array of task objects
      */
     function getFilteredTasks() {
-      // Return all tasks if filter is 'all'
-      if (currentFilter === 'all') {
-        return tasks;
-      }
+      let filtered = tasks;
 
-      // Return only active (incomplete) tasks
+      // Apply completion filter (all/active/completed)
       if (currentFilter === 'active') {
-        return tasks.filter(task => !task.completed);
+        filtered = filtered.filter(task => !task.completed);
+      } else if (currentFilter === 'completed') {
+        filtered = filtered.filter(task => task.completed);
       }
 
-      // Return only completed tasks
-      if (currentFilter === 'completed') {
-        return tasks.filter(task => task.completed);
+      // Apply due date filter (all/overdue/today/week/none)
+      filtered = filterTodosByDueDateCriteria(filtered, currentDueDateFilter);
+
+      // Apply sorting
+      if (currentSort === 'due-asc') {
+        filtered = sortTodosByDueDate(filtered, 'asc');
+      } else if (currentSort === 'due-desc') {
+        filtered = sortTodosByDueDate(filtered, 'desc');
       }
 
-      // Fallback: return all tasks
-      return tasks;
+      return filtered;
     }
 
     // === Event Handlers ===
@@ -715,6 +1431,92 @@
       setFilter(filter);
     }
 
+    /**
+     * Handle sort dropdown change event
+     * Updates sort state and re-renders with sorted results
+     *
+     * @param {Event} event - Change event from sort dropdown
+     * @returns {void}
+     */
+    function handleSortChange(event) {
+      // Get selected sort option
+      const sortValue = event.target.value;
+
+      // Update current sort state
+      currentSort = sortValue;
+
+      // Save to sessionStorage for FR-012 (session persistence)
+      try {
+        sessionStorage.setItem('todoAppSort', sortValue);
+      } catch (error) {
+        console.warn('Could not save sort preference:', error);
+      }
+
+      // Re-render with new sort order
+      renderTasks();
+
+      // Announce sort change to screen readers
+      let message = 'Sort changed to ';
+      if (sortValue === 'due-asc') {
+        message += 'due date, earliest first';
+      } else if (sortValue === 'due-desc') {
+        message += 'due date, latest first';
+      } else {
+        message += 'default order';
+      }
+      announceToScreenReader(message);
+    }
+
+    /**
+     * Handle due date filter button click event
+     * Updates filter state and re-renders with filtered results
+     *
+     * @param {Event} event - Click event from filter button
+     * @returns {void}
+     */
+    function handleDueDateFilterClick(event) {
+      // Get filter criteria from button's data attribute
+      const filterCriteria = event.target.getAttribute('data-filter-due');
+
+      // Update current due date filter state
+      currentDueDateFilter = filterCriteria;
+
+      // Save to sessionStorage for FR-012 (session persistence)
+      try {
+        sessionStorage.setItem('todoAppDueDateFilter', filterCriteria);
+      } catch (error) {
+        console.warn('Could not save filter preference:', error);
+      }
+
+      // Update active button styling
+      const filterButtons = document.querySelectorAll('.filter-btn-due');
+      filterButtons.forEach(btn => {
+        if (btn.getAttribute('data-filter-due') === filterCriteria) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Re-render with new filter
+      renderTasks();
+
+      // Announce filter change to screen readers
+      let message = 'Filter changed to ';
+      if (filterCriteria === 'overdue') {
+        message += 'overdue tasks only';
+      } else if (filterCriteria === 'today') {
+        message += 'tasks due today only';
+      } else if (filterCriteria === 'week') {
+        message += 'tasks due this week only';
+      } else if (filterCriteria === 'none') {
+        message += 'tasks with no due date only';
+      } else {
+        message += 'all tasks';
+      }
+      announceToScreenReader(message);
+    }
+
     // === Initialization ===
 
     /**
@@ -730,11 +1532,31 @@
         // Continue with in-memory mode (app still works, just won't persist)
       }
 
+      // Run migration to add dueDate field to existing todos (if needed)
+      // This must run before loading tasks into memory
+      migrateTasksSchema();
+
       // Load tasks from localStorage
       tasks = loadTasks();
 
       // Load filter state from localStorage
       currentFilter = loadFilter();
+
+      // Restore sort and due date filter from sessionStorage (FR-012)
+      try {
+        const savedSort = sessionStorage.getItem('todoAppSort');
+        if (savedSort) {
+          currentSort = savedSort;
+          document.getElementById('sort-select').value = savedSort;
+        }
+
+        const savedDueDateFilter = sessionStorage.getItem('todoAppDueDateFilter');
+        if (savedDueDateFilter) {
+          currentDueDateFilter = savedDueDateFilter;
+        }
+      } catch (error) {
+        console.warn('Could not restore session state:', error);
+      }
 
       // Render initial filter button states
       renderFilterButtons();
@@ -746,13 +1568,25 @@
       const form = document.getElementById('taskForm');
       form.addEventListener('submit', handleFormSubmit);
 
-      // Set up filter button event listeners
+      // Set up completion filter button event listeners
       const filterButtons = document.querySelectorAll('.filter-btn');
       filterButtons.forEach(button => {
         button.addEventListener('click', () => {
           const filter = button.getAttribute('data-filter');
           handleFilterClick(filter);
         });
+      });
+
+      // Set up sort dropdown event listener
+      const sortSelect = document.getElementById('sort-select');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', handleSortChange);
+      }
+
+      // Set up due date filter button event listeners
+      const dueDateFilterButtons = document.querySelectorAll('.filter-btn-due');
+      dueDateFilterButtons.forEach(button => {
+        button.addEventListener('click', handleDueDateFilterClick);
       });
     }
 
