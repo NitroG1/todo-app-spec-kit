@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell.exe:*)",
+      "SlashCommand(/speckit.plan Use vanilla HTML, CSS, and JavaScript. Keep it simple with localStorage for saving data. Organize code with clear functions for each feature.)",
+      "Bash(git rev-parse:*)",
+      "Bash(test:*)",
+      "Bash(start index.html)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
