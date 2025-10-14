@@ -107,6 +107,35 @@ FOLLOW-UP TODOS: None - all templates are compatible with the established princi
 
 **Rationale**: Minimal design reduces cognitive load for both users and developers. A clean interface is easier to navigate and use, while clean code is easier to understand and maintain. Simplicity leads to better performance, fewer bugs, and faster development cycles.
 
+## Design Philosophy
+
+### Visual Aesthetic
+Our application embodies the design principles of Apple's Human Interface Guidelines:
+- Clarity through hierarchy and legible typography
+- Deference where content takes precedence over UI
+- Depth through subtle layering and motion
+
+### Technical Implementation
+- **Framework:** Tailwind CSS for utility-first styling
+- **Components:** shadcn/ui for accessible, customizable components
+- **Inspiration:** iOS/macOS design patterns (Cards, Lists, Sheets)
+
+### Design Specifications
+- **Spacing:** Generous whitespace using Tailwind's default scale
+- **Colors:** Neutral grays (slate) with subtle accent colors
+- **Typography:** System font stack, clear hierarchy
+- **Borders:** Soft, rounded corners (rounded-lg, rounded-xl)
+- **Shadows:** Subtle depth (shadow-sm for elevation)
+- **Animations:** Smooth, purposeful (transition-all duration-200)
+- **Touch Targets:** Minimum 44x44px for all interactive elements
+
+### Component Patterns
+- Prefer Card-based layouts over harsh containers
+- Use subtle hover states (hover:bg-slate-50)
+- Implement smooth transitions on state changes
+- Avoid bright, saturated colors (use muted tones)
+- Generous padding within interactive elements
+
 ## Quality Standards
 
 ### Testing Requirements
