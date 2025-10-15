@@ -57,6 +57,50 @@ Research findings for implementing priority levels in the todo app, focusing on 
 - Border provides additional visual distinction
 - Text labels ensure screen reader users get full information
 
+### Priority Badge Design (Color Collision Fix)
+
+**Problem Identified:** Using color-only indicators creates conflicts when priority colors (Red/Orange/Blue) overlap with due date status colors (Red=overdue, Orange=due today).
+
+**Solution:** Icon + Text + Color badges that work independently of due date colors.
+
+**Implementation:**
+
+**High Priority Badge:**
+- Background: Red (#DC2626)
+- Text: "HIGH" in white
+- Icon: ⬆️ or "!" symbol
+- Format: `[HIGH]` or `[⬆️ HIGH]`
+
+**Medium Priority Badge:**
+- Background: Orange (#F59E0B)
+- Text: "MED" in white
+- Icon: ➡️ or "=" symbol
+- Format: `[MED]` or `[➡️ MED]`
+
+**Low Priority Badge:**
+- Background: Blue (#3B82F6)
+- Text: "LOW" in white
+- Icon: ⬇️ or "-" symbol
+- Format: `[LOW]` or `[⬇️ LOW]`
+
+**Layout Strategy:**
+```
+[HIGH] Buy groceries                    Overdue - Oct 12
+  ↑                                            ↑
+Priority badge (left)              Due date text (right)
+```
+
+**Key Principles:**
+1. Priority uses BADGE (colored background box)
+2. Due date uses TEXT COLOR (red/orange/gray text)
+3. Spatial separation prevents overlap
+4. Icon + text ensures accessibility (not color-dependent)
+5. Screen readers announce both: "High priority, Overdue October 12th"
+
+**Accessibility Compliance:**
+- WCAG AA contrast: White text on colored backgrounds (4.5:1 minimum)
+- Not color-dependent: Icon and text provide redundant cues
+- Keyboard accessible: All priority controls navigable via keyboard
 ---
 
 ### 3. UI Placement and Interaction Patterns

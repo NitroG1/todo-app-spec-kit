@@ -21,6 +21,56 @@ When creating a new todo item, users need to indicate its urgency or importance 
 2. **Given** the user is creating a new todo, **When** they do not select a priority, **Then** the todo is created with Medium priority as the default
 3. **Given** the user is creating a new todo, **When** they select "Low" priority and save the todo, **Then** the todo is created with Low priority
 
+#### Interaction Behaviors for Priority Editor
+
+**Opening Priority Editor:**
+- User clicks "Edit" button next to todo
+- Priority dropdown appears inline (below or next to todo)
+- Focus automatically moves to priority selector
+- Other todos remain non-editable (single editor mode)
+- Edit button changes visual state to indicate active editing
+
+**Keyboard Navigation:**
+- **Tab:** Move between priority options and action buttons
+- **Enter:** Select current priority option and save changes
+- **Escape:** Cancel editing, restore original priority, close editor
+- **Arrow Up/Down:** Navigate through priority options (High/Med/Low)
+- **Space:** Toggle dropdown open/closed (if applicable)
+
+**Mouse/Touch Interactions:**
+- **Click priority option:** Immediately select and save that priority
+- **Click "Save" button:** Confirm selection and close editor
+- **Click "Cancel" button:** Discard changes and close editor
+- **Click outside editor area:** Auto-save current selection and close editor
+
+**Edge Cases:**
+- **Multiple editors:** If user opens edit on Todo A, then clicks edit on Todo B:
+  → Auto-save Todo A changes
+  → Close Todo A editor  
+  → Open Todo B editor
+  → Only one editor active at any time
+
+- **Editing during filter:** If user changes priority while viewing filtered list:
+  → If new priority matches active filter: todo remains visible
+  → If new priority doesn't match filter: todo disappears from view
+  → Filter state persists (not cleared by edit action)
+
+- **Editing during sort:** If user changes priority while list is sorted by priority:
+  → Todo immediately moves to correct position in sort order
+  → Sort state maintained
+  → Visual transition (optional): Brief highlight or animation
+
+**State Management:**
+- Priority changes save immediately to localStorage on selection or Save
+- No "unsaved changes" warning needed (immediate persistence)
+- Focus returns to edit button after save/cancel for keyboard users
+- Edit mode indicated by visual change (button icon, color, or text)
+
+**Accessibility:**
+- Screen reader announces: "Editing priority for [todo text]"
+- Screen reader announces priority changes: "Priority changed to High"
+- Focus management ensures keyboard-only users can complete full edit cycle
+- All interactions available without mouse
 ---
 
 ### User Story 2 - Visual Priority Indicators (Priority: P1)
@@ -101,6 +151,42 @@ When users have many todos, they want to focus on specific priority levels to av
 - **FR-013**: System MUST maintain filter state while users interact with todos (create, edit, complete)
 - **FR-014**: System MUST assign Medium priority to any existing todos that lack priority information
 - **FR-015**: System MUST preserve priority information when a todo is marked as complete or incomplete
+
+### FR-16: Visual Hierarchy and Display Rules
+
+**When Priority and Due Date Both Present:**
+1. Priority badge ALWAYS displays (never hidden by due date status)
+2. Due date ALWAYS displays (never hidden by priority)
+3. Priority affects BADGE style (colored background, left side)
+4. Due date affects TEXT COLOR only (right side)
+5. Both systems operate independently with no visual interference
+
+**Spatial Layout:**
+- Priority badge: Left side, immediately before todo text
+- Todo text: Center, main content area
+- Due date: Right side, aligned right or after text
+
+**Completed Todos:**
+- Priority badge remains fully visible (no opacity reduction)
+- Due date remains visible but styled as secondary
+- Strikethrough applies to todo text only, not badges or dates
+
+**Visual Weight Priority (most to least prominent):**
+1. Priority badge (colored background box)
+2. Due date text (colored text)
+3. Todo text (standard text)
+
+**Color Contrast Requirements:**
+- Priority badges: Minimum 4.5:1 contrast (white text on colored background)
+- Due date text: Minimum 4.5:1 contrast with page background
+- No same-color combinations permitted (verified in design phase)
+
+**Example Rendering:**
+```
+[HIGH] Buy groceries for dinner party        Overdue - Oct 12
+[MED] Call dentist to schedule checkup       Due Today
+[LOW] Read article about productivity        Due Oct 20
+```
 
 ### Key Entities
 
