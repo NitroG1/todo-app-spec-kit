@@ -281,6 +281,40 @@
       border-color: #2980b9;
     }
 
+    /* Priority filter controls */
+    .priority-filter-controls {
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .filter-btn-priority {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+      background-color: #ecf0f1;
+      color: #555;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .filter-btn-priority:hover {
+      background-color: #d5dbdb;
+    }
+
+    .filter-btn-priority.active {
+      background-color: #3498db;
+      color: white;
+      border-color: #2980b9;
+    }
+
+    .filter-btn-priority:focus {
+      outline: 3px solid #3498db;
+      outline-offset: 2px;
+    }
+
     /* === Due Date Display === */
     /* Styles for displaying due dates next to todo items */
     .due-date {
@@ -288,6 +322,102 @@
       color: #666;
       font-style: italic;
       margin-left: 0.5rem;
+    }
+
+    /* === Priority Selection and Display === */
+    /* Styles for priority dropdown in creation form and priority badges */
+
+    /* Priority selector dropdown in task creation form */
+    .priority-select {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .priority-select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    /* Base styles for priority badges */
+    .priority-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 2px solid;
+      margin-right: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* High priority badge - red theme */
+    .priority-high {
+      background-color: #DC2626;
+      color: white;
+      border-color: #B91C1C;
+    }
+
+    /* Medium priority badge - orange theme */
+    .priority-medium {
+      background-color: #F59E0B;
+      color: white;
+      border-color: #D97706;
+    }
+
+    /* Low priority badge - blue theme */
+    .priority-low {
+      background-color: #3B82F6;
+      color: white;
+      border-color: #2563EB;
+    }
+
+    /* Muted priority badge for completed tasks */
+    .task-item.completed .priority-badge {
+      opacity: 0.5;
+    }
+
+    /* Priority badge hover and focus states for inline editing */
+    .priority-badge:hover {
+      opacity: 0.9;
+      cursor: pointer;
+      transform: scale(1.05);
+      transition: all 0.2s;
+    }
+
+    .priority-badge:focus {
+      outline: 3px solid #3498db;
+      outline-offset: 2px;
+    }
+
+    /* Inline priority editor container */
+    .priority-editor {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    .priority-editor select {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      transition: border-color 0.2s;
+    }
+
+    .priority-editor select:focus {
+      outline: none;
+      border-color: #3498db;
     }
 
     /* Edit button for inline due date editing */
@@ -406,6 +536,12 @@
           maxlength="1000"
           autocomplete="off"
         >
+        <label for="priority-select" class="sr-only">Priority</label>
+        <select id="priority-select" class="priority-select" aria-label="Select priority level">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
         <button type="submit" class="btn btn-primary">Add</button>
       </form>
 
@@ -433,6 +569,12 @@
           <button class="btn filter-btn-due" data-filter-due="week">This Week</button>
           <button class="btn filter-btn-due" data-filter-due="none">No Due Date</button>
         </div>
+        <div class="priority-filter-controls">
+          <button class="btn filter-btn-priority active" data-filter-priority="all" aria-label="Show all priorities">All</button>
+          <button class="btn filter-btn-priority" data-filter-priority="high" aria-label="Filter by High priority">High</button>
+          <button class="btn filter-btn-priority" data-filter-priority="medium" aria-label="Filter by Medium priority">Medium</button>
+          <button class="btn filter-btn-priority" data-filter-priority="low" aria-label="Filter by Low priority">Low</button>
+        </div>
       </div>
 
       <!-- Task List -->
@@ -456,6 +598,9 @@
 
     // Current due date filter: 'all', 'overdue', 'today', 'week', 'none'
     let currentDueDateFilter = 'all';
+
+    // Current priority filter: 'all', 'high', 'medium', or 'low'
+    let currentPriorityFilter = 'all';
 
     // === Utility Functions ===
 
@@ -561,6 +706,101 @@
       }
 
       return true;
+    }
+
+    /**
+     * Validate a priority value
+     * Checks if the priority string is one of the three valid values
+     *
+     * @param {string} priority - Priority value to validate
+     * @returns {boolean} True if valid, false otherwise
+     */
+    function isValidPriority(priority) {
+      // Must be a string
+      if (typeof priority !== 'string') {
+        return false;
+      }
+
+      // Normalize to lowercase for case-insensitive comparison
+      const normalized = priority.toLowerCase();
+
+      // Check if it's one of the three valid values
+      return ['high', 'medium', 'low'].includes(normalized);
+    }
+
+    /**
+     * Get CSS class name for a priority level
+     * Maps priority value to corresponding CSS class
+     *
+     * @param {string} priority - Priority value: 'high', 'medium', or 'low'
+     * @returns {string} CSS class name (e.g., 'priority-high')
+     */
+    function getPriorityClass(priority) {
+      // Validate and normalize priority
+      if (!isValidPriority(priority)) {
+        console.warn('Invalid priority, defaulting to medium:', priority);
+        return 'priority-medium';
+      }
+
+      // Return class name for the priority level
+      const normalized = priority.toLowerCase();
+      return `priority-${normalized}`;
+    }
+
+    /**
+     * Get display label for a priority level
+     * Maps priority value to user-friendly label
+     *
+     * @param {string} priority - Priority value: 'high', 'medium', or 'low'
+     * @returns {string} Display label (e.g., 'High', 'Med', 'Low')
+     */
+    function getPriorityLabel(priority) {
+      // Validate and normalize priority
+      if (!isValidPriority(priority)) {
+        console.warn('Invalid priority, defaulting to medium:', priority);
+        return 'Med';
+      }
+
+      // Map priority to abbreviated label for space efficiency
+      const normalized = priority.toLowerCase();
+      if (normalized === 'high') {
+        return 'High';
+      } else if (normalized === 'medium') {
+        return 'Med';
+      } else if (normalized === 'low') {
+        return 'Low';
+      }
+
+      // Fallback (should never reach here due to validation)
+      return 'Med';
+    }
+
+    /**
+     * Get the selected priority from the form dropdown
+     * Reads the current selection from the priority dropdown in the task creation form
+     *
+     * @returns {string} Priority value: 'high', 'medium', or 'low'
+     */
+    function getPriorityFromForm() {
+      // Get the priority select element
+      const prioritySelect = document.getElementById('priority-select');
+
+      if (!prioritySelect) {
+        console.warn('Priority selector not found, defaulting to medium');
+        return 'medium';
+      }
+
+      // Get the selected value
+      const selectedPriority = prioritySelect.value;
+
+      // Validate the priority value
+      if (!isValidPriority(selectedPriority)) {
+        console.warn('Invalid priority selected, defaulting to medium:', selectedPriority);
+        return 'medium';
+      }
+
+      // Return the valid priority
+      return selectedPriority.toLowerCase();
     }
 
     /**
@@ -783,6 +1023,38 @@
     }
 
     /**
+     * Migrate todos from schema v2 (feature 002) to schema v3 (feature 003)
+     * Adds priority: 'medium' to any todo missing the field
+     * This is a non-destructive, one-time operation that ensures backward compatibility
+     *
+     * @returns {void}
+     */
+    function migratePrioritySchema() {
+      // Load current tasks from localStorage
+      const loadedTasks = loadTasks();
+
+      // Track if any tasks were updated
+      let updated = false;
+
+      // Check each task for the priority field
+      loadedTasks.forEach(task => {
+        // If task is missing the priority field, add it with 'medium' value
+        if (!task.hasOwnProperty('priority')) {
+          task.priority = 'medium';
+          updated = true;
+        }
+      });
+
+      // Save back to localStorage only if changes were made
+      if (updated) {
+        // Update global tasks array
+        tasks = loadedTasks;
+        saveTasks();
+        console.log(`Migration complete: Added priority field to ${loadedTasks.length} todos`);
+      }
+    }
+
+    /**
      * Check if localStorage is available and working
      * Tests localStorage by attempting to set and remove a test value
      *
@@ -877,6 +1149,29 @@
         // Attach change event listener to toggle completion
         checkbox.addEventListener('change', () => handleCheckboxChange(task.id));
 
+        // Create priority badge (clickable for editing)
+        const priorityBadge = document.createElement('span');
+        priorityBadge.id = `priority-badge-${task.id}`;
+        priorityBadge.className = `priority-badge ${getPriorityClass(task.priority)}`;
+        priorityBadge.textContent = getPriorityLabel(task.priority);
+        priorityBadge.setAttribute('aria-label', `Priority: ${getPriorityLabel(task.priority)}. Click to edit.`);
+        priorityBadge.setAttribute('role', 'button');
+        priorityBadge.setAttribute('tabindex', '0');
+
+        // Add click event listener for editing priority
+        priorityBadge.addEventListener('click', () => togglePriorityEditor(task.id));
+
+        // Add keyboard support (Enter/Space to open editor)
+        priorityBadge.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            togglePriorityEditor(task.id);
+          }
+        });
+
+        // Create inline priority editor
+        const priorityEditor = createPriorityEditor(task.id, task.priority);
+
         // Create task text span
         const textSpan = document.createElement('span');
         textSpan.className = 'task-text';
@@ -950,6 +1245,8 @@
 
         // Append all elements to list item
         li.appendChild(checkbox);
+        li.appendChild(priorityBadge);
+        li.appendChild(priorityEditor);
         li.appendChild(textSpan);
         li.appendChild(editBtn);
         li.appendChild(datePickerContainer);
@@ -1106,6 +1403,129 @@
       toggleDatePicker(todoId);
     }
 
+    // === Priority Management Functions ===
+
+    /**
+     * Set or update the priority for a todo
+     * Validates priority value, updates todo, saves, and announces change
+     *
+     * @param {number} todoId - The ID of the todo to update
+     * @param {string} priority - Priority value: 'high', 'medium', or 'low'
+     * @returns {boolean} True if successful, false if todo not found or invalid priority
+     */
+    function setTodoPriority(todoId, priority) {
+      // Validate priority value
+      if (!isValidPriority(priority)) {
+        console.warn('Invalid priority value:', priority);
+        return false;
+      }
+
+      // Find todo by ID
+      const todo = tasks.find(t => t.id === todoId);
+      if (!todo) {
+        console.warn('Todo not found:', todoId);
+        return false;
+      }
+
+      // Update the priority
+      todo.priority = priority.toLowerCase();
+
+      // Save to localStorage
+      saveTasks();
+
+      // Re-render the task list
+      renderTasks();
+
+      // Announce change to screen readers
+      announceToScreenReader(`Priority changed to ${getPriorityLabel(priority)}`);
+
+      return true;
+    }
+
+    /**
+     * Toggle visibility of the inline priority editor for a todo
+     * Shows/hides the editor and manages focus for accessibility
+     *
+     * @param {number} todoId - The ID of the todo being edited
+     * @returns {void}
+     */
+    function togglePriorityEditor(todoId) {
+      // Get the priority editor container for this todo
+      const editorContainer = document.getElementById(`priority-editor-${todoId}`);
+      if (!editorContainer) {
+        console.warn('Priority editor container not found for todo:', todoId);
+        return;
+      }
+
+      // Check if editor is currently hidden
+      const isHidden = editorContainer.style.display === 'none' || editorContainer.style.display === '';
+
+      if (isHidden) {
+        // Show the editor
+        editorContainer.style.display = 'block';
+
+        // Focus the priority select for keyboard accessibility
+        const prioritySelect = editorContainer.querySelector('select');
+        if (prioritySelect) {
+          prioritySelect.focus();
+        }
+      } else {
+        // Hide the editor
+        editorContainer.style.display = 'none';
+
+        // Return focus to the priority badge
+        const priorityBadge = document.getElementById(`priority-badge-${todoId}`);
+        if (priorityBadge) {
+          priorityBadge.focus();
+        }
+      }
+    }
+
+    /**
+     * Create inline priority editor element
+     * Builds the editor UI with dropdown and handles priority changes
+     *
+     * @param {number} todoId - The ID of the todo being edited
+     * @param {string} currentPriority - Current priority value
+     * @returns {HTMLElement} The editor container element
+     */
+    function createPriorityEditor(todoId, currentPriority) {
+      // Create editor container
+      const editorContainer = document.createElement('div');
+      editorContainer.id = `priority-editor-${todoId}`;
+      editorContainer.className = 'priority-editor';
+      editorContainer.style.display = 'none';
+
+      // Create priority select dropdown
+      const prioritySelect = document.createElement('select');
+      prioritySelect.className = 'priority-select';
+      prioritySelect.setAttribute('aria-label', 'Change priority');
+
+      // Add options
+      const priorities = ['high', 'medium', 'low'];
+      priorities.forEach(priority => {
+        const option = document.createElement('option');
+        option.value = priority;
+        option.textContent = getPriorityLabel(priority);
+        if (priority === currentPriority.toLowerCase()) {
+          option.selected = true;
+        }
+        prioritySelect.appendChild(option);
+      });
+
+      // Handle priority change
+      prioritySelect.addEventListener('change', (e) => {
+        const newPriority = e.target.value;
+        setTodoPriority(todoId, newPriority);
+        togglePriorityEditor(todoId);
+      });
+
+      // Add select to container
+      editorContainer.appendChild(prioritySelect);
+
+      return editorContainer;
+    }
+
     // === Task Management Functions ===
 
     /**
@@ -1127,7 +1547,8 @@
         id: generateTaskId(),
         text: taskText.trim(),
         completed: false,
-        dueDate: null  // ISO 8601 date string (YYYY-MM-DD) or null if no due date
+        dueDate: null,  // ISO 8601 date string (YYYY-MM-DD) or null if no due date
+        priority: getPriorityFromForm()  // Get priority from form dropdown
       };
 
       // Add task to array
@@ -1344,7 +1765,7 @@
 
     /**
      * Get filtered and sorted tasks based on current filters and sort
-     * Applies completion filter, due date filter, and sorting
+     * Applies completion filter, due date filter, priority filter, and sorting
      *
      * @returns {Array} Filtered and sorted array of task objects
      */
@@ -1360,6 +1781,11 @@
 
       // Apply due date filter (all/overdue/today/week/none)
       filtered = filterTodosByDueDateCriteria(filtered, currentDueDateFilter);
+
+      // Apply priority filter (all/high/medium/low)
+      if (currentPriorityFilter !== 'all') {
+        filtered = filtered.filter(task => task.priority === currentPriorityFilter);
+      }
 
       // Apply sorting
       if (currentSort === 'due-asc') {
@@ -1517,6 +1943,54 @@
       announceToScreenReader(message);
     }
 
+    /**
+     * Handle priority filter button click event
+     * Updates filter state and re-renders with filtered results
+     *
+     * @param {Event} event - Click event from filter button
+     * @returns {void}
+     */
+    function handlePriorityFilterClick(event) {
+      // Get filter criteria from button's data attribute
+      const filterCriteria = event.target.getAttribute('data-filter-priority');
+
+      // Update current priority filter state
+      currentPriorityFilter = filterCriteria;
+
+      // Save to sessionStorage (session persistence like due date filter)
+      try {
+        sessionStorage.setItem('todoAppPriorityFilter', filterCriteria);
+      } catch (error) {
+        console.warn('Could not save priority filter preference:', error);
+      }
+
+      // Update active button styling
+      const filterButtons = document.querySelectorAll('.filter-btn-priority');
+      filterButtons.forEach(btn => {
+        if (btn.getAttribute('data-filter-priority') === filterCriteria) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Re-render with new filter
+      renderTasks();
+
+      // Announce filter change to screen readers
+      let message = 'Filter changed to ';
+      if (filterCriteria === 'high') {
+        message += 'high priority tasks only';
+      } else if (filterCriteria === 'medium') {
+        message += 'medium priority tasks only';
+      } else if (filterCriteria === 'low') {
+        message += 'low priority tasks only';
+      } else {
+        message += 'all priorities';
+      }
+      announceToScreenReader(message);
+    }
+
     // === Initialization ===
 
     /**
@@ -1532,9 +2006,10 @@
         // Continue with in-memory mode (app still works, just won't persist)
       }
 
-      // Run migration to add dueDate field to existing todos (if needed)
-      // This must run before loading tasks into memory
-      migrateTasksSchema();
+      // Run migrations to add new fields to existing todos (if needed)
+      // These must run before loading tasks into memory
+      migrateTasksSchema();      // Schema v1 → v2: adds dueDate field
+      migratePrioritySchema();   // Schema v2 → v3: adds priority field
 
       // Load tasks from localStorage
       tasks = loadTasks();
@@ -1542,7 +2017,7 @@
       // Load filter state from localStorage
       currentFilter = loadFilter();
 
-      // Restore sort and due date filter from sessionStorage (FR-012)
+      // Restore sort, due date filter, and priority filter from sessionStorage
       try {
         const savedSort = sessionStorage.getItem('todoAppSort');
         if (savedSort) {
@@ -1553,6 +2028,11 @@
         const savedDueDateFilter = sessionStorage.getItem('todoAppDueDateFilter');
         if (savedDueDateFilter) {
           currentDueDateFilter = savedDueDateFilter;
+        }
+
+        const savedPriorityFilter = sessionStorage.getItem('todoAppPriorityFilter');
+        if (savedPriorityFilter) {
+          currentPriorityFilter = savedPriorityFilter;
         }
       } catch (error) {
         console.warn('Could not restore session state:', error);
@@ -1587,6 +2067,12 @@
       const dueDateFilterButtons = document.querySelectorAll('.filter-btn-due');
       dueDateFilterButtons.forEach(button => {
         button.addEventListener('click', handleDueDateFilterClick);
+      });
+
+      // Set up priority filter button event listeners
+      const priorityFilterButtons = document.querySelectorAll('.filter-btn-priority');
+      priorityFilterButtons.forEach(button => {
+        button.addEventListener('click', handlePriorityFilterClick);
       });
     }
 
