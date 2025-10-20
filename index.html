@@ -138,6 +138,7 @@
       padding: 1rem;
       border-bottom: 1px solid #eee;
       transition: background-color 0.2s;
+      flex-wrap: wrap; /* Allow items to wrap to new line */
     }
 
     .task-item:hover {
@@ -445,6 +446,8 @@
       background-color: #f9f9f9;
       border-radius: 4px;
       border: 1px solid #ddd;
+      width: 100%; /* Take full width */
+      flex-shrink: 0; /* Prevent compression */
     }
 
     .date-input {
@@ -1375,8 +1378,15 @@
      * @param {string} action - 'save' or 'clear'
      * @returns {void}
      */
-    function handleDueDateChange(event, todoId, action) {
+
+     function handleDueDateChange(event, todoId, action) {
       event.preventDefault();
+
+      // Hide the date picker FIRST (before re-render destroys it)
+      const pickerContainer = document.getElementById(`date-picker-${todoId}`);
+      if (pickerContainer) {
+        pickerContainer.style.display = 'none';
+      }
 
       if (action === 'clear') {
         // Clear the due date
@@ -1393,14 +1403,11 @@
         if (newDate) {
           // Set the new due date
           setTodoDueDate(todoId, newDate);
-        } else {
+          } else {
           // If date input is empty, remove due date
           removeTodoDueDate(todoId);
         }
       }
-
-      // Hide the date picker
-      toggleDatePicker(todoId);
     }
 
     // === Priority Management Functions ===
@@ -1513,11 +1520,28 @@
         prioritySelect.appendChild(option);
       });
 
-      // Handle priority change
-      prioritySelect.addEventListener('change', (e) => {
-        const newPriority = e.target.value;
-        setTodoPriority(todoId, newPriority);
-        togglePriorityEditor(todoId);
+      // Handle keyboard shortcuts FIRST (before change event)
+      prioritySelect.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const newPriority = e.target.value;
+          setTodoPriority(todoId, newPriority);
+          togglePriorityEditor(todoId);
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          togglePriorityEditor(todoId); // Close without saving
+        }
+      });     
+
+      // Handle mouse clicks on dropdown (blur event)
+      prioritySelect.addEventListener('blur', (e) => {
+        // Only save if editor is still visible (not closed by Escape)
+        const editor = document.getElementById(`priority-editor-${todoId}`);
+        if (editor && editor.style.display !== 'none') {
+          const newPriority = e.target.value;
+          setTodoPriority(todoId, newPriority);
+          togglePriorityEditor(todoId);
+        }
       });
 
       // Add select to container
